@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="50" fill="#b5893a"/>
-  <!-- Compass rose -->
-  <circle cx="50" cy="50" r="28" fill="none" stroke="#fff" stroke-width="2"/>
-  <!-- N -->
-  <polygon points="50,18 45,38 50,34 55,38" fill="#fff"/>
-  <!-- S -->
-  <polygon points="50,82 55,62 50,66 45,62" fill="#c9a84c"/>
-  <!-- E -->
-  <polygon points="82,50 62,45 66,50 62,55" fill="#fff"/>
-  <!-- W -->
-  <polygon points="18,50 38,55 34,50 38,45" fill="#fff"/>
-  <!-- Center dot -->
-  <circle cx="50" cy="50" r="4" fill="#fff"/>
+  <circle cx="50" cy="50" r="50" fill="#e8a0b4"/>
+  <!-- Suitcase body -->
+  <rect x="22" y="38" width="56" height="38" rx="5" fill="#fff" stroke="#c4607a" stroke-width="2.5"/>
+  <!-- Suitcase handle -->
+  <path d="M38 38 Q38 26 50 26 Q62 26 62 38" fill="none" stroke="#c4607a" stroke-width="3" stroke-linecap="round"/>
+  <!-- Center divider -->
+  <line x1="50" y1="38" x2="50" y2="76" stroke="#c4607a" stroke-width="2"/>
+  <!-- Horizontal strap -->
+  <line x1="22" y1="57" x2="78" y2="57" stroke="#c4607a" stroke-width="2"/>
+  <!-- Lock -->
+  <rect x="44" y="53" width="12" height="8" rx="2" fill="#e8a0b4" stroke="#c4607a" stroke-width="1.5"/>
+  <!-- Star accent -->
+  <text x="72" y="36" font-size="14" fill="#fff">✦</text>
 </svg>
