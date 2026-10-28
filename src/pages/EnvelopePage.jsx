@@ -24,7 +24,7 @@ export default function EnvelopePage() {
 
   return (
     <div className="envelope-bg">
-      <p className="envelope-hint">{opened ? '✉️ Membuka kenangan...' : 'Klik amplop untuk membuka'}</p>
+      <p className="envelope-hint">{opened ? '✉️ Membuka kenangan...' : 'Special Memories for You'}</p>
       <div className={`envelope ${opened ? 'open' : ''}`} onClick={handleOpen}>
         <div className="envelope-flap" />
         <div className="envelope-body">
