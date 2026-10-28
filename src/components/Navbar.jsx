@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout()
-    navigate('/')
+    navigate('/gallery')
     setOpen(false)
   }
 
@@ -24,7 +24,7 @@ export default function Navbar() {
         <span /><span /><span />
       </button>
       <div className={`navbar-links${open ? ' open' : ''}`}>
-        <a href="https://princessa-fortunata.github.io/adins_journey/#/" onClick={() => setOpen(false)}>Gallery</a>
+        <a href="https://princessa-fortunata.github.io/adins_journey/#/gallery" onClick={() => setOpen(false)}>Gallery</a>
         {isAdmin && (
           <>
             <Link to="/admin" onClick={() => setOpen(false)}>Admin</Link>
