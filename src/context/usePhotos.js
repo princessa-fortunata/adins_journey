@@ -27,8 +27,9 @@ export function usePhotos() {
       const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd })
       const data = await res.json()
       if (!data.secure_url) throw new Error(data.error?.message || 'Upload failed')
-      const newDoc = await addDoc(collection(db, COL), { ...meta, src: data.secure_url, publicId: data.public_id })
-      setPhotos(prev => [...prev, { id: newDoc.id, ...meta, src: data.secure_url, publicId: data.public_id }])
+      const payload = { ...meta, src: data.secure_url, publicId: data.public_id, uploadedAt: Date.now() }
+      const newDoc = await addDoc(collection(db, COL), payload)
+      setPhotos(prev => [...prev, { id: newDoc.id, ...payload }])
     } finally {
       setLoading(false)
     }

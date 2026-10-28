@@ -9,7 +9,7 @@ export default function GalleryPage() {
 
   const uniqueYears = [...new Set(years)].sort((a, b) => a - b)
   const filtered = activeYear === 'all'
-    ? [...photos].sort((a, b) => a.year - b.year || a.id.localeCompare(b.id))
+    ? [...photos].sort((a, b) => a.year - b.year || (a.uploadedAt ?? 0) - (b.uploadedAt ?? 0))
     : photos.filter(p => p.year === Number(activeYear))
 
   return (
