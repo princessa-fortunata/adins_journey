@@ -1,0 +1,21 @@
+.music-player {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 500;
+}
+
+.music-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: #d4607a;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(212,96,122,0.4);
+  transition: transform 0.2s, background 0.2s;
+}
+
+.music-btn:hover { transform: scale(1.1); background: #e8a0b4; }

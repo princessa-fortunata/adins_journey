@@ -1,0 +1,76 @@
+CREATE MEMBER CURRENTCUBE.[Measures].[Sales Defect Ever 0+ Monthly (Contract)]
+AS IIF(
+    -- 1. SKIP jika tidak ada OS Principal sama sekali di context
+    ISNULL([Measures].[OS Principal (Contract)])
+    OR [Measures].[OS Principal (Contract)] = 0,
+    0,
+    IIF(
+      -- 2. CONTEXT SUBTOTAL: MOB Detail di level All atau MOB Group
+      [Dim MOB Month].[MOB Detail].CurrentMember IS [Dim MOB Month].[MOB Detail].[All]
+      OR NOT (
+        [Dim MOB Month].[MOB Detail].CurrentMember.Level
+        IS [Dim MOB Month].[MOB Detail].[MOB Detail]
+      ),
+      -- Subtotal: SUM tiap leaf member secara eksplisit
+      SUM(
+        FILTER(
+          [Dim MOB Month].[MOB Detail].[MOB Detail].Members,
+          [Dim MOB Month].[MOB Detail].CurrentMember.MemberValue > 0
+          AND [Dim MOB Month].[MOB Detail].CurrentMember.Name <> "0"
+          AND [Dim MOB Month].[MOB Detail].CurrentMember.Name <> "Unknown"
+        ),
+        [Measures].[Sales Defect Ever 0+ Monthly (Contract)]
+      ),
+      -- 3. CONTEXT DETAIL: hitung per MOB leaf
+      IIF(
+        [Dim MOB Month].[MOB Detail].CurrentMember.Name = "0"
+        OR [Dim MOB Month].[MOB Detail].CurrentMember.MemberValue = 0
+        OR [Dim MOB Month].[MOB Detail].CurrentMember.Name = "Unknown"
+        OR IsEmpty([Dim MOB Month].[MOB Detail].CurrentMember),
+        0,
+        IIF(
+          -- 4. Cek LINKMEMBER valid dan ada nilainya
+          ISEMPTY(
+            LINKMEMBER(
+              [Dim MOB Month].[MOB Detail].CurrentMember,
+              [Dim MOB Ever 0 Month].[MOB Detail]
+            )
+          )
+          OR LINKMEMBER(
+              [Dim MOB Month].[MOB Detail].CurrentMember,
+              [Dim MOB Ever 0 Month].[MOB Detail]
+             ) IS [Dim MOB Ever 0 Month].[MOB Detail].[All]
+          OR COALESCEEMPTY(
+              (
+                LINKMEMBER(
+                  [Dim MOB Month].[MOB Detail].CurrentMember,
+                  [Dim MOB Ever 0 Month].[MOB Detail]
+                ),
+                [Measures].[OS Principal (Contract)]
+              ),
+              0
+             ) = 0,
+          0,
+          -- 5. SUM AKUMULASI: dari MOB Ever 0 = 1 sampai nilai LINKMEMBER saat ini
+          SUM(
+            FILTER(
+              [Dim MOB Ever 0 Month].[MOB Detail].[MOB Detail].Members,
+              [Dim MOB Ever 0 Month].[MOB Detail].CurrentMember.MemberValue >= 1
+              AND [Dim MOB Ever 0 Month].[MOB Detail].CurrentMember.MemberValue
+                  <= LINKMEMBER(
+                       [Dim MOB Month].[MOB Detail].CurrentMember,
+                       [Dim MOB Ever 0 Month].[MOB Detail]
+                     ).MemberValue
+            ),
+            (
+              [Dim MOB Month].[MOB Group].[All],
+              [Dim MOB Month].[MOB Detail].[All],
+              [Measures].[OS Principal (Contract)]
+            )
+          )
+        )
+      )
+    )
+  ),
+FORMAT_STRING = "#,##0",
+VISIBLE = 1, ASSOCIATED_MEASURE_GROUP = 'Fact Agreement SS';

@@ -10,13 +10,15 @@ const YEARS = Array.from({ length: CURRENT_YEAR - 2023 }, (_, i) => 2024 + i)
 export default function AdminPage() {
   const { isAdmin } = useAuth()
   const navigate = useNavigate()
-  const { addPhoto, deletePhoto, getByYear } = usePhotos()
+  const { addPhoto, editPhoto, deletePhoto, getByYear, loading } = usePhotos()
 
   const [activeYear, setActiveYear] = useState(CURRENT_YEAR)
   const [form, setForm] = useState({ title: '', location: '', description: '', year: CURRENT_YEAR })
   const [preview, setPreview] = useState(null)
   const [fileData, setFileData] = useState(null)
   const [success, setSuccess] = useState(false)
+  const [editingPhoto, setEditingPhoto] = useState(null)
+  const [editForm, setEditForm] = useState({})
 
   if (!isAdmin) { navigate('/login'); return null }
 
@@ -24,19 +26,51 @@ export default function AdminPage() {
     const file = e.target.files[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (ev) => { setPreview(ev.target.result); setFileData(ev.target.result) }
+    reader.onload = (ev) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const MAX = 1200
+        let { width, height } = img
+        if (width > MAX || height > MAX) {
+          if (width > height) { height = Math.round(height * MAX / width); width = MAX }
+          else { width = Math.round(width * MAX / height); height = MAX }
+        }
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.75)
+        setPreview(dataUrl)
+        setFileData(dataUrl)
+      }
+      img.src = ev.target.result
+    }
     reader.readAsDataURL(file)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!fileData) return
-    addPhoto({ ...form, year: Number(form.year), src: fileData })
-    setForm({ title: '', location: '', description: '', year: CURRENT_YEAR })
-    setPreview(null)
-    setFileData(null)
-    setSuccess(true)
-    setTimeout(() => setSuccess(false), 3000)
+    try {
+      await addPhoto({ ...form, year: Number(form.year), src: fileData })
+      setForm({ title: '', location: '', description: '', year: CURRENT_YEAR })
+      setPreview(null)
+      setFileData(null)
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (err) {
+      alert('Upload gagal: ' + err.message)
+    }
+  }
+
+  const handleEdit = (photo) => {
+    setEditingPhoto(photo)
+    setEditForm({ title: photo.title, location: photo.location, description: photo.description || '', year: photo.year })
+  }
+
+  const handleEditSave = () => {
+    editPhoto(editingPhoto.id, { ...editForm, year: Number(editForm.year) })
+    setEditingPhoto(null)
   }
 
   const yearPhotos = getByYear(activeYear)
@@ -56,7 +90,7 @@ export default function AdminPage() {
               {preview ? <img src={preview} alt="preview" className="upload-preview" /> : (
                 <div className="upload-placeholder"><span>+</span><p>Click to select photo</p></div>
               )}
-              <input id="fileInput" type="file" accept="image/*" onChange={handleFile} hidden />
+              <input id="fileInput" type="file" accept="image/*,.jfif,.jpe" onChange={handleFile} hidden />
             </div>
 
             <div className="form-row">
@@ -83,7 +117,9 @@ export default function AdminPage() {
             </div>
 
             {success && <p className="success-msg">✦ Photo uploaded successfully</p>}
-            <button type="submit" className="btn-upload">Upload Photo</button>
+            <button type="submit" className="btn-upload" disabled={loading}>
+              {loading ? 'Uploading...' : 'Upload Photo'}
+            </button>
           </form>
         </div>
 
@@ -106,13 +142,49 @@ export default function AdminPage() {
                     <p className="admin-card-title">{photo.title}</p>
                     <p className="admin-card-loc">{photo.location}</p>
                   </div>
-                  <button className="btn-delete" onClick={() => deletePhoto(photo.id)}>✕</button>
+                  <div className="admin-card-actions">
+                    <button className="btn-edit" onClick={() => handleEdit(photo)}>✎</button>
+                    <button className="btn-delete" onClick={() => deletePhoto(photo.id)}>✕</button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {editingPhoto && (
+        <div className="modal-overlay" onClick={() => setEditingPhoto(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Edit Photo</h3>
+              <button className="modal-close" onClick={() => setEditingPhoto(null)}>✕</button>
+            </div>
+            <img src={editingPhoto.src} alt={editingPhoto.title} className="modal-img" />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Title</label>
+                <input type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
+              </div>
+              <div className="form-group">
+                <label>Year</label>
+                <select value={editForm.year} onChange={e => setEditForm({ ...editForm, year: e.target.value })}>
+                  {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="form-group">
+              <label>Location</label>
+              <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows={3} />
+            </div>
+            <button className="btn-upload" onClick={handleEditSave}>Save Changes</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

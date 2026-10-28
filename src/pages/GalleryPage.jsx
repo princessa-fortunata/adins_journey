@@ -3,13 +3,12 @@ import { usePhotos } from '../context/usePhotos'
 import './GalleryPage.css'
 
 export default function GalleryPage() {
-  const { photos, years } = usePhotos()
+  const { photos, years, loading } = usePhotos()
   const [activeYear, setActiveYear] = useState('all')
   const [lightbox, setLightbox] = useState(null)
 
   const allYears = [2024, 2025].concat(years.filter(y => y !== 2024 && y !== 2025))
   const uniqueYears = [...new Set(allYears)]
-
   const filtered = activeYear === 'all' ? photos : photos.filter(p => p.year === Number(activeYear))
 
   return (
@@ -27,11 +26,12 @@ export default function GalleryPage() {
         ))}
       </div>
 
-      {filtered.length === 0 ? (
-        <div className="empty-state">
-          <span>✦</span>
-          <p>No memories yet for this period</p>
+      {loading ? (
+        <div className="skeleton-grid">
+          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="skeleton-card" />)}
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty-state"><span>✦</span><p>No memories yet for this period</p></div>
       ) : (
         <div className="photo-grid">
           {filtered.map(photo => (

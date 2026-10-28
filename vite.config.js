@@ -3,5 +3,5 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/cessa_memories/',
+  base: '/adins_journey/',
 })

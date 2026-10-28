@@ -4,13 +4,13 @@
 
 :root {
   --bg: #ffffff;
-  --bg2: #f8f8f6;
-  --bg3: #f0efe9;
-  --gold: #b5893a;
-  --gold-light: #c9a84c;
-  --text: #1a1a1a;
-  --text-muted: #888;
-  --border: #e0ddd6;
+  --bg2: #fff0f5;
+  --bg3: #ffe4ef;
+  --gold: #d4607a;
+  --gold-light: #e8a0b4;
+  --text: #2a1a1f;
+  --text-muted: #a07080;
+  --border: #f0c0d0;
 }
 
 body {
