@@ -7,9 +7,10 @@ export default function GalleryPage() {
   const [activeYear, setActiveYear] = useState('all')
   const [lightbox, setLightbox] = useState(null)
 
-  const allYears = [2024, 2025].concat(years.filter(y => y !== 2024 && y !== 2025))
-  const uniqueYears = [...new Set(allYears)]
-  const filtered = activeYear === 'all' ? photos : photos.filter(p => p.year === Number(activeYear))
+  const uniqueYears = [...new Set(years)].sort((a, b) => a - b)
+  const filtered = activeYear === 'all'
+    ? [...photos].sort((a, b) => a.year - b.year)
+    : photos.filter(p => p.year === Number(activeYear))
 
   return (
     <div className="gallery-page">

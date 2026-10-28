@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './MusicPlayer.css'
 
-const AUDIO_URL = 'https://res.cloudinary.com/dafbe77t/video/upload/v1792403438/See_You_Again_-_Wiz_Khalifa_feat._Charlie_Puth_Boyce_Avenue_feat._Bea_Miller_on_Spotify_Apple.mp3'
+const AUDIO_URL = 'https://res.cloudinary.com/dafbe77t/video/upload/v1793197394/Project-Pop-SnapYT.App.mp3'
 
 export default function MusicPlayer() {
   const [playing, setPlaying] = useState(false)

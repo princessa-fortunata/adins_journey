@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './EnvelopePage.css'
 
-const AUDIO_URL = 'https://res.cloudinary.com/dafbe77t/video/upload/v1792403438/See_You_Again_-_Wiz_Khalifa_feat._Charlie_Puth_Boyce_Avenue_feat._Bea_Miller_on_Spotify_Apple.mp3'
+const AUDIO_URL = 'https://res.cloudinary.com/dafbe77t/video/upload/v1793197394/Project-Pop-SnapYT.App.mp3'
 
-// Reff starts around 1:05
-const REFF_START = 65
+// Reff "Kamu sangat berarti istimewa di hati" ~57s
+const REFF_START = 57
 
 export default function EnvelopePage() {
   const [opened, setOpened] = useState(false)
